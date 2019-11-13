@@ -1,5 +1,18 @@
 $global:profileStats = @()
-$filePath = "C:\Users\patri\Downloads\in\"
+$filePath = "C:\Users\patri\Downloads\profiles\"
+
+function profileCrawl{
+    Param ($mailList)
+    #The CSV input fils contains 1 column named EMAILS
+    $csv = Import-Csv -Path $mailList | Select -expandproperty EMAILS
+    foreach($emailAdr in $csv){
+        $link = "https://snbv-my.sharepoint.com/_layouts/15/me.aspx/?p="+$emailAdr+"&v=profiledetails"
+        #Lets open Google Chrome and save with the help of addon SingleFile(autosave active)
+        start-process "chrome.exe" $link
+        #Sleep for a little time to provoke DDOS
+        Start-Sleep -s 10
+    }
+} #profileCrawl 
 
 function checkUser{
     #Generate default params
@@ -34,12 +47,15 @@ function printStats{
     foreach($userStat in $global:profileStats){
         Write-host ($userStat)
     }
-}
+} #printStats
 
 #main
-$files = Get-ChildItem -Path C:\Users\patri\Downloads\in | Select -expandproperty Name
+profileCrawl("C:\Users\patri\Downloads\list.csv")
+
+$files = Get-ChildItem -Path $filePath | Select -expandproperty Name
 foreach($userFile in $files){
     checkUser($userFile)
 }
 printStats
+
 
