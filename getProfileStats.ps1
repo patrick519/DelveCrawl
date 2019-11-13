@@ -1,4 +1,5 @@
 $global:profileStats = @()
+$global:profileStats += ,@("user;projecten;vaardigheden;score;")
 $filePath = "C:\Users\patri\Downloads\profiles\"
 
 function profileCrawl{
@@ -26,36 +27,36 @@ function checkUser{
     #Check which stats are filled
     if (($null -ne $projecten) -and ($null -ne $vaardigheden)){
         #Write-Output "Contains Projecten & Vaardigheden"
-        $global:profileStats += ,@($user, 1, 1, 1)
+        $global:profileStats += ,@($user+";1;1;1;")
     }
     elseif ($null -ne $projecten){
         #Write-Output "Contains Projecten"
-        $global:profileStats += ,@($user, 1, 0, 0)
+        $global:profileStats += ,@($user+";1;0;0;")
     }
     elseif ($null -ne $vaardigheden){
         #Write-Output "Contains Vaardigheden"
-        $global:profileStats += ,@($user, 0, 1, 0)
+        $global:profileStats += ,@($user+";0;1;0;")
     }
     else{
         #Write-Output "Not Contains"
-        $global:profileStats += ,@($user, 0, 0, 0)
+        $global:profileStats += ,@($user+";0;0;0;")
     }
 } #checkUser
 
 function printStats{
-    Write-Output "user projecten vaardigheden score"
-    foreach($userStat in $global:profileStats){
-        Write-host ($userStat)
-    }
+    Param($location)
+    $global:profileStats | Out-File $location"delveCrawl.csv"
+    #foreach($userStat in $global:profileStats){Write-host ($userStat)}
 } #printStats
 
 #main
+
 profileCrawl("C:\Users\patri\Downloads\list.csv")
 
 $files = Get-ChildItem -Path $filePath | Select -expandproperty Name
 foreach($userFile in $files){
     checkUser($userFile)
 }
-printStats
+printStats(".\")
 
 
