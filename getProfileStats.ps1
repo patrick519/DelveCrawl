@@ -1,11 +1,16 @@
 $global:profileStats = @()
-$filePath = "C:\Users\patri\Downloads\"
+$filePath = "C:\Users\patri\Downloads\in\"
 
 function checkUser{
-    Param ($user)
-    $file = $filePath+$user+".html"
+    #Generate default params
+    Param ($userFile)
+    $file = $filePath+$userFile
+    $user = $userFile -replace ".{22}$"
+    $user = $user.substring(8)
+    #Write-host ($user)
     $projecten = Select-String -Path $file -Pattern 'Projecten'
     $vaardigheden = Select-String -Path $file -Pattern 'Vaardigheden'
+    #Check which stats are filled
     if (($null -ne $projecten) -and ($null -ne $vaardigheden)){
         #Write-Output "Contains Projecten & Vaardigheden"
         $global:profileStats += ,@($user, 1, 1, 1)
@@ -31,7 +36,10 @@ function printStats{
     }
 }
 
-checkUser("rinze")
-checkUser("dennis")
+#main
+$files = Get-ChildItem -Path C:\Users\patri\Downloads\in | Select -expandproperty Name
+foreach($userFile in $files){
+    checkUser($userFile)
+}
 printStats
 
